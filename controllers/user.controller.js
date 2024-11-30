@@ -35,7 +35,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
         password
     };
 
-    const user = (await User.create(fields)).Select;
+    const user = (await User.create(fields));
 
     if (!user) throw new Apierror(409, "Failed to create user !!");
 
@@ -44,7 +44,7 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 
 export const surveyCategory = asyncHandler(async (req, res) => {
     const { preferredSurveyCategory, id } = req.body;
-  
+
     if (!preferredSurveyCategory) throw new Apierror(400, "Preferred survey category is required!!");
     if (!id) throw new Apierror(400, "User id is required!!");
 });

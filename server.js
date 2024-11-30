@@ -1,6 +1,5 @@
 import { app } from "./app.js";
 import http from "http";
-import dotenv from "dotenv";
 import { v2 as Cloudinary } from 'cloudinary';
 import { connectDatabase, disconnectDatabase } from "./config/db.js";
 
@@ -9,7 +8,6 @@ const config = {
     path: "./.env",
 };
 
-dotenv.config({ path: config.path });
 
 const PORT = config.port;
 
