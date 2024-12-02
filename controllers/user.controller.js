@@ -4,6 +4,21 @@ import asyncHandler from "../utils/asyncHandler.js";
 import { Apierror } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 
+const generateAccessAndRefreshTokens = asyncHandler(async (id) => {
+
+    const user = await User.findById(id).select("+refreshToken");
+
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { refreshToken, accessToken };
+});
+
+const options = { httpOnly: true, secure: true }; // global options
+
 export const registerUser = asyncHandler(async (req, res, next) => {
     const { userName, email, password, avatar } = req.body;
 
@@ -47,4 +62,19 @@ export const surveyCategory = asyncHandler(async (req, res) => {
 
     if (!preferredSurveyCategory) throw new Apierror(400, "Preferred survey category is required!!");
     if (!id) throw new Apierror(400, "User id is required!!");
+});
+
+export const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!(email && password)) throw new Apierror(400, "Email and password are required!!");
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user || !(await user.matchPassword(password))) throw new Apierror(401, "Invalid email or password!!");
+
+    const { refreshToken, accessToken } = await generateAccessAndRefreshTokens(user._id);
+
+    res.status(200).cookie("accessToken", accessToken, options)
+        .json(new ApiResponse(200, { user, refreshToken, accessToken }, "User logged in successfully!!"));
 });
