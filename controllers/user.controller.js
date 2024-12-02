@@ -17,7 +17,14 @@ const generateAccessAndRefreshTokens = asyncHandler(async (id) => {
     return { refreshToken, accessToken };
 });
 
-const options = { httpOnly: true, secure: true }; // global options
+const options = {
+    expire: process.env.ACCESS_TOKEN_EXPIRY
+        ? process.env.ACCESS_TOKEN_EXPIRY * 24 * 60 * 60 * 1000
+        : 7 * 24 * 60 * 60 * 1000, // default to 7 days
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Secure flag true only in production
+    sameSite: "strict",
+};// global options
 
 export const registerUser = asyncHandler(async (req, res, next) => {
     const { userName, email, password, avatar } = req.body;
@@ -58,10 +65,15 @@ export const registerUser = asyncHandler(async (req, res, next) => {
 });
 
 export const surveyCategory = asyncHandler(async (req, res) => {
-    const { preferredSurveyCategory, id } = req.body;
+    const { preferredSurveyCategory } = req.body;
 
     if (!preferredSurveyCategory) throw new Apierror(400, "Preferred survey category is required!!");
-    if (!id) throw new Apierror(400, "User id is required!!");
+
+    const user = await User.findByIdAndUpdate(req.user._id, { preferredSurveyCategory }, { new: true, runValidators: true });
+
+    if (!user) throw new Apierror(404, "User not found!!");
+
+    res.status(200).json(new ApiResponse(200, { user }, "thanks for survey category !!"));
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
