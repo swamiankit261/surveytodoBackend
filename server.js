@@ -27,7 +27,7 @@ app.use((err, req, res, next) => {
 
 const server = http.createServer(app);
 
-server.setMaxListeners(20);
+server.setMaxListeners(7);
 
 server.on("request", (req, res) => {
     console.log("Request received!");
