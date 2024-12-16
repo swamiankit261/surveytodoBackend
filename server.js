@@ -50,7 +50,6 @@ process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection at:", promise, "reason:", reason);
     process.exit(1);
 });
-
 // Connect to the database and start the server
 connectDatabase().then(() => {
     server.listen(PORT, "0.0.0.0", () => {

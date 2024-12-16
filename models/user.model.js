@@ -7,22 +7,22 @@ const schema = mongoose.Schema;
 const userSchema = new schema({
     userName: {
         type: String,
-        required: [true, "please enter a userName !!"],
+        required: [true, "please enter a userName.!!"],
         trim: true,
         lowercase: true,
-        minLength: [4, "userName should have more than 4 characters !!"],
-        maxLength: [30, "name cannot exceed 30 characters"]
+        minLength: [4, "userName {VALUE} should have more than 4 characters.!!"],
+        maxLength: [30, "name cannot exceed 30 characters.!!"]
     },
     email: {
         type: String,
         required: [true, "Please enter a valid email !!"],
         lowercase: true,
         trim: true,
-        unique: true,
+        unique: [true, "Please enter a valid email.!!"],
         index: true,
         validate: [function (value) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-        }, "Email address must begin with a letter or underscore character and contain only alphanumeric characters !!"]
+        }, "Email address must begin with a letter or underscore character and contain only alphanumeric characters.!!"]
     },
     role: { // User roles
         type: String,
@@ -32,24 +32,25 @@ const userSchema = new schema({
     avatar: {
         public_id: {
             type: String,
-            required: true
+            required: [true, "avatar public id is required.!!"]
         },
         url: { // cloudinary url
             type: String,
-            required: true
+            required: [true, "url must be required.!!"]
         }
     },
     preferredSurveyCategory: { // Set on first login for users
         type: String,
-        enum: ["Technology", "Health", "Education"], // Example categories
+        enum: ["technology", "health", "education", "human-resources", "finance", "entertainment", "travel", "food", "sports", "ecommerce", "fashion", "government", "real-estate"], // Example categories
+        lowercase: true,
         default: null
     },
     password: {
         type: String,
         select: false,
-        required: [true, "Please enter a password !!"],
-        minLength: [8, "Password should have more than 8 characters !!"],
-        match: [/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character !!"]
+        required: [true, "Please enter a password.!!"],
+        minLength: [8, "Password should have more than 8 characters.!!"],
+        match: [/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.!!"]
     },
     refreshToken: {
         type: String,
